@@ -1,0 +1,55 @@
+name: RoKa - Upstream Sync
+
+# Opens a pull request once a month with everything new on ChrisTitusTech/winutil main.
+# Nothing is merged automatically: test the pull request in the VM first, then merge it with
+# "Create a merge commit". A squash merge would hide the upstream history from the next run.
+#
+# Needs "Allow GitHub Actions to create and approve pull requests" under
+# Settings > Actions > General.
+
+on:
+  schedule:
+    - cron: '17 5 1 * *' # 05:17 UTC on the first day of every month
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  open-sync-pr:
+    if: github.repository == 'OfficeKnight/winutil'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      UPSTREAM_OWNER: ChrisTitusTech
+    steps:
+    - name: Open a pull request with the upstream changes
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        ahead=$(gh api "repos/${GITHUB_REPOSITORY}/compare/main...${UPSTREAM_OWNER}:main" --jq '.ahead_by')
+        if [ "$ahead" -eq 0 ]; then
+          echo "Nothing new upstream."
+          exit 0
+        fi
+
+        open=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --base main \
+          --json headRefName,headRepositoryOwner \
+          --jq "[.[] | select(.headRefName == \"main\" and .headRepositoryOwner.login == \"${UPSTREAM_OWNER}\")] | length")
+        if [ "$open" -gt 0 ]; then
+          echo "An upstream sync pull request is already open; it follows upstream main on its own."
+          exit 0
+        fi
+
+        gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "${UPSTREAM_OWNER}:main" \
+          --title "Upstream sync $(date -u +%Y-%m)" \
+          --body "Brings in ${ahead} new commit(s) from ${UPSTREAM_OWNER}/winutil main.
+
+        Before merging:
+        - wait for the checks on this pull request
+        - build it and test it in the Windows 11 VM
+        - check that new or changed tweaks do not belong on the danger list (config/rokadanger.json)
+
+        Merge with \"Create a merge commit\", not with squash."
