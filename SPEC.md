@@ -25,6 +25,7 @@ WinUtil is a Windows PowerShell utility with a WPF interface. The repository is 
 - `scripts/main.ps1`: main entrypoint appended at the end of the compiled script.
 - `functions/public/`: public/UI-facing PowerShell functions.
 - `functions/private/`: internal helper PowerShell functions.
+- `functions/roka/`, `config/roka*.json`, `pester/roka-*.Tests.ps1`, `.github/workflows/roka-*.yaml`: RoKa Edition additions that do not exist upstream; see `ROKA.md`.
 - `config/`: JSON configuration consumed at compile time and embedded into `$sync.configs`.
 - `xaml/inputXML.xaml`: WPF UI markup embedded into the compiled script.
 - `tools/autounattend.xml`: unattended setup XML embedded for Windows ISO workflows.

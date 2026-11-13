@@ -1,0 +1,14 @@
+{
+  "WPFTweaksRemoveEdge": {
+    "Reason": "Uninstalls Microsoft Edge through an unsupported workaround. Parts of Windows and other programs expect Edge to be present."
+  },
+  "WPFTweaksRazerBlock": {
+    "Reason": "Sets DisableCoInstallers and turns driver searching off, which blocks the vendor helper programs that run during driver installation. This can break drivers for USB and diagnostic interfaces."
+  },
+  "WPFTweaksDiskCleanup": {
+    "Reason": "Runs DISM /StartComponentCleanup /ResetBase, which cannot be undone. Installed Windows updates can no longer be uninstalled afterwards."
+  },
+  "WPFUpdatesdisable": {
+    "Reason": "Turns Windows Update off completely, so the machine stops receiving security updates."
+  }
+}

@@ -17,6 +17,15 @@ function Invoke-WPFtweaksbutton {
     return
   }
 
+  # RoKa Edition: danger-listed tweaks need their own confirmation and never run unattended
+  if ($null -ne $sync.configs.rokadanger) {
+    $dangerDecision = Confirm-WinUtilDangerSelection -Keys $Tweaks
+    $Tweaks = $dangerDecision.Keys
+    if (-not $dangerDecision.Proceed -or (@($Tweaks).Count -eq 0 -and $dnsProvider -eq "Default")) {
+      return
+    }
+  }
+
   Write-WinUtilLog -Component "Tweaks" -Message "Tweaks requested: $(@($Tweaks).Count) selected tweak(s), DNS provider: $dnsProvider"
 
   Start-WinUtilJob -Name "Tweaks" -Description "Applying tweaks" -QueueIfBusy -Parameters @{

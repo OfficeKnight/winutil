@@ -60,6 +60,13 @@ function Update-WinUtilSelections {
             throw "Unknown selection key '$cbkey'."
         }
 
+        # RoKa Edition: danger-listed entries are only ever selected by hand in the window, so a
+        # preset, an imported config or a headless run can never bring one in
+        if ($null -ne $sync.configs.rokadanger -and $null -ne $sync.configs.rokadanger.PSObject.Properties[$cbkey]) {
+            Write-WinUtilLog -Level "WARN" -Component "Selections" -Message "Left out danger-listed entry '$cbkey': it can only be selected by hand."
+            continue
+        }
+
         # Replacement imports must also behave like checkbox selections, not repeated actions.
         if ($nextSelections[$listName] -notcontains $cbkey) {
             $nextSelections[$listName].Add($cbkey)
